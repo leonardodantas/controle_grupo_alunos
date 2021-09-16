@@ -1,7 +1,7 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Grupo;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Group;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.dto.UsuarioDTO;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -17,21 +17,21 @@ import java.util.Objects;
 @AllArgsConstructor
 public class GrupoDTO {
 
-    private Long id_grupo;
+    private String id_grupo;
     @NotNull(message = "{desc.not.null}") @Length(min = 5, message = "{length.cinco}")
     private String descricao;
     @NotNull(message = "{qtd.not.null}") @Positive(message = "{qtd.min.um}")
-    private Long qtde_participantes;
+    private int qtde_participantes;
     @JsonProperty("isOpenGrupo")
     private boolean isOpenGrupo;
     private List<UsuarioDTO> usuariosDTOList;
 
-    public GrupoDTO(Grupo grupo){
+    public GrupoDTO(Group grupo){
         if(!Objects.isNull(grupo)){
             this.id_grupo = grupo.getId();
-            this.descricao = grupo.getDescricao();
-            this.qtde_participantes = grupo.getQuantidadeParticipantes();
-            this.isOpenGrupo = grupo.isOpenGrupo();
+            this.descricao = grupo.getDescription();
+            this.qtde_participantes = grupo.getNumberParticipants();
+            this.isOpenGrupo = grupo.isOpenGroup();
         }
     }
 

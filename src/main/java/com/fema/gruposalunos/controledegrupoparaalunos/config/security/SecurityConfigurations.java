@@ -1,6 +1,6 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.config.security;
 
-import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.IUsuarioRepository;
+import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.UserRepository;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.autenticacao.AutenticacaoService;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.autenticacao.AutenticacaoViaTokenFilter;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.autenticacao.TokenService;
@@ -26,7 +26,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     private TokenService tokenService;
 
     @Autowired
-    private IUsuarioRepository usuarioRepository;
+    private UserRepository usuarioRepository;
 
     @Autowired
     private AutenticacaoService autenticacaoService;
@@ -58,16 +58,10 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/grupo/participantes").hasAnyRole("PROFESSOR","ALUNO")
                 .antMatchers(HttpMethod.PUT,"/grupo/fechar/*").hasRole("PROFESSOR")
                 .antMatchers(HttpMethod.POST,"/grupo/finalizar/sistema").hasRole("PROFESSOR")
-                .anyRequest().denyAll()
-<<<<<<< HEAD
-                .and().cors()
-                .and().csrf().disable()
-                .addFilterBefore(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
-=======
+                .anyRequest().permitAll()
                 .and().cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().addFilterBefore(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
->>>>>>> 68c565c29e4f568562b29ad2138ace79eaac5721
     }
 
 

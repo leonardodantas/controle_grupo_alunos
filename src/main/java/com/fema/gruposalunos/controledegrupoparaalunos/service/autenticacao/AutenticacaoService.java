@@ -1,7 +1,7 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.service.autenticacao;
 
-import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.Usuario;
-import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.IUsuarioRepository;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.User;
+import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,11 +14,11 @@ import java.util.Optional;
 public class AutenticacaoService implements UserDetailsService {
 
     @Autowired
-    private IUsuarioRepository repository;
+    private UserRepository repository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Usuario> usuario = repository.findByEmail(username);
+        Optional<User> usuario = repository.findByEmail(username);
         if (!usuario.isPresent()) {
             throw new UsernameNotFoundException("Dados inválidos!");
         }

@@ -1,6 +1,6 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.assembler;
 
-import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Grupo;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Group;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.dto.GrupoDTO;
 import org.springframework.stereotype.Component;
 
@@ -11,29 +11,29 @@ import java.util.stream.Collectors;
 @Component
 public class GrupoAssembler {
 
-    public Grupo dtoToEntity(GrupoDTO grupoDTO){
-        return Grupo.builder()
+    public Group dtoToEntity(GrupoDTO grupoDTO){
+        return Group.builder()
                 .id(grupoDTO.getId_grupo())
-                .descricao(grupoDTO.getDescricao())
-                .quantidadeParticipantes(grupoDTO.getQtde_participantes())
-                .isOpenGrupo(grupoDTO.isOpenGrupo())
+                .description(grupoDTO.getDescricao())
+                .numberParticipants(grupoDTO.getQtde_participantes())
+                .isOpenGroup(grupoDTO.isOpenGrupo())
                 .build();
     }
 
-    public GrupoDTO entityToDto(Grupo grupo){
+    public GrupoDTO entityToDto(Group grupo){
 
         if(Objects.isNull(grupo)) {
             return GrupoDTO.builder().build();
         }
         return GrupoDTO.builder()
                 .id_grupo(grupo.getId())
-                .descricao(grupo.getDescricao())
-                .qtde_participantes(grupo.getQuantidadeParticipantes())
-                .isOpenGrupo(grupo.isOpenGrupo())
+                .descricao(grupo.getDescription())
+                .qtde_participantes(grupo.getNumberParticipants())
+                .isOpenGrupo(grupo.isOpenGroup())
                 .build();
     }
 
-    public List<GrupoDTO> entitysToManyDtos(List<Grupo> grupos){
+    public List<GrupoDTO> entitysToManyDtos(List<Group> grupos){
         return grupos.stream().map(GrupoDTO::new).collect(Collectors.toList());
     }
 }

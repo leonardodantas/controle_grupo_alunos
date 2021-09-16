@@ -1,7 +1,7 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.service.autenticacao;
 
-import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.Usuario;
-import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.IUsuarioRepository;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.User;
+import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.UserRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -16,9 +16,9 @@ import java.util.Objects;
 public class AutenticacaoViaTokenFilter extends OncePerRequestFilter {
 
     private TokenService tokenService;
-    private IUsuarioRepository repository;
+    private UserRepository repository;
 
-    public AutenticacaoViaTokenFilter(TokenService tokenService, IUsuarioRepository repository) {
+    public AutenticacaoViaTokenFilter(TokenService tokenService, UserRepository repository) {
         this.tokenService = tokenService;
         this.repository = repository;
     }
@@ -37,9 +37,9 @@ public class AutenticacaoViaTokenFilter extends OncePerRequestFilter {
     }
 
     private void autenticarCliente(String token) {
-        Long idUsuario = tokenService.getIdUsuario(token);
-        Usuario usuario = repository.findById(idUsuario).get();
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
+        String idUsuario = tokenService.getIdUsuario(token);
+        User user = repository.findById(idUsuario).get();
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

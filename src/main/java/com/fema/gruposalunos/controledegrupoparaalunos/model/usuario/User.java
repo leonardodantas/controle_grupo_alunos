@@ -1,7 +1,9 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.model.usuario;
 
-import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Grupo;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Group;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.response.GroupResponseDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.perfil.Perfil;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.response.UserResponseDTO;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,12 +20,12 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "usuarios")
-public class Usuario implements UserDetails {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_usuario")
-    private Long id;
+    private String id;
 
     @Column(name="nome", length = 50)
     private String nome;
@@ -39,10 +41,19 @@ public class Usuario implements UserDetails {
 
     @OneToOne
     @JoinColumn(name = "grupo_id")
-    private Grupo grupo;
+    private Group grupo;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Perfil> perfis = new ArrayList<>();
+
+    private User(UserResponseDTO userResponseDTO, GroupResponseDTO group) {
+        this.id = userResponseDTO.getId();
+        this.grupo = Group.from(group);
+    }
+
+    public static User of(UserResponseDTO userResponseDTO, GroupResponseDTO group) {
+        return new User(userResponseDTO, group);
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -79,7 +90,7 @@ public class Usuario implements UserDetails {
         return true;
     }
 
-    public Long getIdGrupo() {
+    public String getIdGrupo() {
         return grupo.getId();
     }
 }

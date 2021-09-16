@@ -1,7 +1,6 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.service.autenticacao;
 
-import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.Usuario;
-import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.dto.UsuarioDTO;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,7 +20,7 @@ public class TokenService {
     private String secret;
 
     public String gerarToken(Authentication authentication) {
-        Usuario logado = (Usuario) authentication.getPrincipal();
+        User logado = (User) authentication.getPrincipal();
         Date hoje = new Date();
         Date dataExpiracao = new Date(hoje.getTime() + Long.parseLong(expiration));
 
@@ -43,8 +42,8 @@ public class TokenService {
         }
     }
 
-    public Long getIdUsuario(String token) {
+    public String getIdUsuario(String token) {
         Claims claims = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
-        return Long.parseLong(claims.getSubject());
+        return claims.getSubject();
     }
 }

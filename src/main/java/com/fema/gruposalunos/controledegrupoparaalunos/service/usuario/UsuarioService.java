@@ -2,14 +2,14 @@ package com.fema.gruposalunos.controledegrupoparaalunos.service.usuario;
 
 import com.fema.gruposalunos.controledegrupoparaalunos.model.email.EmailDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.perfil.Perfil;
-import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.Usuario;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.User;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.assembler.UsuarioAssembler;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.dto.UsuarioDTO;
-import com.fema.gruposalunos.controledegrupoparaalunos.repository.grupo.IGrupoRepository;
-import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.IUsuarioRepository;
+import com.fema.gruposalunos.controledegrupoparaalunos.repository.grupo.GroupRepository;
+import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.UserRepository;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.email.IEmailService;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.excecao.IExcecaoService;
-import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IGrupoService;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IGroupFindService;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.senha.GeradorDeSenha;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,16 +25,13 @@ import java.util.*;
 public class UsuarioService implements IUsuarioService {
 
     @Autowired
-    private IUsuarioRepository usuarioRepository;
+    private UserRepository usuarioRepository;
 
     @Autowired
-    private IGrupoRepository grupoRepository;
+    private GroupRepository groupRepository;
 
     @Autowired
     private UsuarioAssembler usuarioAssembler;
-
-    @Autowired
-    private IGrupoService grupoService;
 
     @Autowired
     private GeradorDeSenha geradorDeSenha;
@@ -45,46 +42,49 @@ public class UsuarioService implements IUsuarioService {
     @Autowired
     private IEmailService emailService;
 
+    @Autowired
+    private IGroupFindService groupFindService;
+
     @Override
     @Transactional
     public void cadastrarNovoUsuario(UsuarioDTO usuarioDTO) {
-        Usuario usuario = prepararUsuario(usuarioDTO);
+        User user = prepararUsuario(usuarioDTO);
         existeUsuarioNoBanco(usuarioDTO);
-        inserirUsuarioNoGrupo(usuario);
+        inserirUsuarioNoGrupo(user);
     }
 
-    public Usuario prepararUsuario(UsuarioDTO usuarioDTO){
+    public User prepararUsuario(UsuarioDTO usuarioDTO){
         usuarioDTO = definirStatusDoUsuario(usuarioDTO);
-        Usuario usuario = usuarioAssembler.dtoToEntity(usuarioDTO);
-        usuario.setSenha(gerarSenhaParaUsuario());
-        enviarEmailParaUsuarioComSenha(usuario);
-        return usuario;
+        User user = usuarioAssembler.dtoToEntity(usuarioDTO);
+        user.setSenha(gerarSenhaParaUsuario());
+//        enviarEmailParaUsuarioComSenha(user);
+        return user;
     }
 
     @Transactional
-    public Usuario inserirUsuarioNoGrupo(Usuario usuario) {
+    public User inserirUsuarioNoGrupo(User user) {
 
-        if(grupoService.verificarSeGrupoAceitaIntegrate(usuario.getIdGrupo())){
+        if(groupFindService.groupHaveSpace(user.getIdGrupo())){
             try {
-                usuarioRepository.save(usuario);
+                usuarioRepository.save(user);
             } catch (Exception e){
                 e.printStackTrace();
             }
         }
-        return usuario;
+        return user;
     }
 
     @Override
     public Page<UsuarioDTO> recuperarTodos(Pageable pageable) {
-        Page<Usuario> usuarios = buscarUsuariosNoBanco(pageable);
+        Page<User> usuarios = buscarUsuariosNoBanco(pageable);
         List<UsuarioDTO> usuarioDTOList = usuarioAssembler.entityToManyDtos(usuarios.getContent());
         Page<UsuarioDTO> usuarioDTOS = new PageImpl<>(usuarioDTOList);
         return usuarioDTOS;
     }
 
     @Override
-    public UsuarioDTO recuperarPeloId(Long id) {
-        Optional<Usuario> usuario = usuarioRepository.findById(id);
+    public UsuarioDTO recuperarPeloId(String id) {
+        Optional<User> usuario = usuarioRepository.findById(id);
         if(!usuario.isPresent()){
             excecaoService.lancaExcecao(HttpStatus.NOT_FOUND, "Usuario inexistente");
         }
@@ -92,20 +92,18 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public List<Usuario> recuperarTodosUsuariosPeloIdDoGrupo(Long id_grupo) {
-        Optional<List<Usuario>> allByGrupoId = usuarioRepository.findAllByGrupoId(id_grupo);
-        if(allByGrupoId.isPresent()){
-            return allByGrupoId.get();
-        }
-        return Collections.emptyList();
+    public List<User> recuperarTodosUsuariosPeloIdDoGrupo(String id_grupo) {
+        return usuarioRepository.findAllById(id_grupo);
+//        usuarioRepository.findAll
+//        return Collections.emptyList();
     }
 
     @Override
     @Transactional
     public void atualizarUsuario(UsuarioDTO usuarioDTO) {
-        Usuario usuario = usuarioAssembler.dtoToEntity(usuarioDTO);
+        User user = usuarioAssembler.dtoToEntity(usuarioDTO);
         try {
-            usuarioRepository.save(usuario);
+            usuarioRepository.save(user);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -113,7 +111,7 @@ public class UsuarioService implements IUsuarioService {
 
     @Override
     public boolean usuarioEAdministrador(UsuarioDTO usuarioDTO) {
-        Optional<Usuario> usuario = usuarioRepository.buscarAdmPeloId(usuarioDTO.getId_usuario());
+        Optional<User> usuario = usuarioRepository.buscarAdmPeloId(usuarioDTO.getId_usuario());
         return usuario.isPresent();
     }
 
@@ -122,7 +120,7 @@ public class UsuarioService implements IUsuarioService {
         if(!verificarSeExisteAdministrador()){
             excecaoService.lancaExcecao(HttpStatus.CONFLICT, "Usuario Administrador não existe");
         }
-        Optional<Usuario> userAdmin = usuarioRepository.findByAdmin("S");
+        Optional<User> userAdmin = usuarioRepository.findByAdmin("S");
         UsuarioDTO usuarioDTO = usuarioAssembler.entityToDto(userAdmin.get());
         return usuarioDTO;
     }
@@ -133,8 +131,8 @@ public class UsuarioService implements IUsuarioService {
         usuarioRepository.deleteAll();
     }
 
-    private Page<Usuario> buscarUsuariosNoBanco(Pageable pageable){
-        Page<Usuario> usuarios = null;
+    private Page<User> buscarUsuariosNoBanco(Pageable pageable){
+        Page<User> usuarios = null;
         try {
             usuarios = usuarioRepository.findAll(pageable);
         } catch (Exception e){
@@ -143,11 +141,11 @@ public class UsuarioService implements IUsuarioService {
         return usuarios;
     }
 
-    private void enviarEmailParaUsuarioComSenha(Usuario usuario){
+    private void enviarEmailParaUsuarioComSenha(User user){
         EmailDTO emailDTO = EmailDTO.builder()
-                .emailDestinatario(usuario.getEmail())
-                .nomeDestino(usuario.getNome())
-                .senha(usuario.getSenha())
+                .emailDestinatario(user.getEmail())
+                .nomeDestino(user.getNome())
+                .senha(user.getSenha())
                 .build();
         emailService.enviarEmailComSenha(emailDTO);
     }
@@ -170,12 +168,12 @@ public class UsuarioService implements IUsuarioService {
     }
 
     private boolean verificarSeExisteAdministrador() {
-        Optional<Usuario> usuarioAdm = usuarioRepository.findByAdmin("S");
+        Optional<User> usuarioAdm = usuarioRepository.findByAdmin("S");
         return usuarioAdm.isPresent();
     }
 
     private void existeUsuarioNoBanco(UsuarioDTO usuarioDto){
-        Optional<Usuario> usuario = usuarioRepository.findByEmail(usuarioDto.getEmail());
+        Optional<User> usuario = usuarioRepository.findByEmail(usuarioDto.getEmail());
         if(usuario.isPresent()){
             excecaoService.lancaExcecao(HttpStatus.CONFLICT,"Usuario já cadastrado");
         }

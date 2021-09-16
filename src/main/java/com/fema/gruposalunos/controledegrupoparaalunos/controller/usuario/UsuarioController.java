@@ -2,6 +2,7 @@ package com.fema.gruposalunos.controledegrupoparaalunos.controller.usuario;
 
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.dto.UsuarioDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.usuario.IUsuarioService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@Api(tags = "Usuarios")
 @CrossOrigin
 @RestController
 @RequestMapping("/usuario")
@@ -31,7 +33,7 @@ public class UsuarioController {
     }
 
     @GetMapping(value ="/{id}", name="Recuperar usuario pela ID")
-    public ResponseEntity<?> recureparPeloId(@PathVariable Long id){
+    public ResponseEntity<?> recureparPeloId(@PathVariable String id){
         UsuarioDTO usuarioDTO = usuarioService.recuperarPeloId(id);
         return ResponseEntity.ok(usuarioDTO);
     }

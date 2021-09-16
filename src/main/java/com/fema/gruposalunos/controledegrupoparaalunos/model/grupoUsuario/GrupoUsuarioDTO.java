@@ -13,7 +13,7 @@ import javax.validation.constraints.Positive;
 public class GrupoUsuarioDTO {
 
     @NotNull(message = "{id.not.null}") @Positive(message = "{id.positive}")
-    private Long id_grupo;
+    private String id_grupo;
     @NotNull(message = "{id.not.null}") @Positive(message = "{id.positive}")
-    private Long id_usuario;
+    private String id_usuario;
 }

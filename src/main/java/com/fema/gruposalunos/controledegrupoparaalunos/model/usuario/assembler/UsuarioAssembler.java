@@ -1,8 +1,8 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.assembler;
 
-import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Grupo;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Group;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.assembler.GrupoAssembler;
-import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.Usuario;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.User;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.dto.UsuarioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,14 +18,14 @@ public class UsuarioAssembler {
     @Autowired
     private GrupoAssembler grupoAssembler;
 
-    public Usuario dtoToEntity(UsuarioDTO usuarioDTO) {
+    public User dtoToEntity(UsuarioDTO usuarioDTO) {
 
-        Grupo grupo = null;
+        Group grupo = null;
 
         if(!Objects.isNull(usuarioDTO.getGrupo())) {
             grupo = grupoAssembler.dtoToEntity(usuarioDTO.getGrupo());
         }
-        return Usuario.builder()
+        return User.builder()
                 .id(usuarioDTO.getId_usuario())
                 .nome(usuarioDTO.getNome())
                 .admin(usuarioDTO.getAdmin())
@@ -36,26 +36,26 @@ public class UsuarioAssembler {
                 .build();
     }
 
-    public UsuarioDTO entityToDto(Usuario usuario) {
+    public UsuarioDTO entityToDto(User user) {
 
-        if(Objects.isNull(usuario)){
+        if(Objects.isNull(user)){
             return new UsuarioDTO();
         }
         return UsuarioDTO.builder()
-                .id_usuario(usuario.getId())
-                .admin(usuario.getAdmin())
-                .email(usuario.getEmail())
-                .nome(usuario.getNome())
-                .grupo(grupoAssembler.entityToDto(usuario.getGrupo()))
+                .id_usuario(user.getId())
+                .admin(user.getAdmin())
+                .email(user.getEmail())
+                .nome(user.getNome())
+                .grupo(grupoAssembler.entityToDto(user.getGrupo()))
                 .build();
 
     }
 
-    public List<UsuarioDTO> entityToManyDtos(List<Usuario> usuarios) {
-        if(usuarios.isEmpty()){
+    public List<UsuarioDTO> entityToManyDtos(List<User> users) {
+        if(users.isEmpty()){
             return Collections.emptyList();
         }
-        usuarios.stream().map(user -> grupoAssembler.entityToDto(user.getGrupo()));
-        return usuarios.stream().map(UsuarioDTO::new).collect(Collectors.toList());
+        users.stream().map(user -> grupoAssembler.entityToDto(user.getGrupo()));
+        return users.stream().map(UsuarioDTO::new).collect(Collectors.toList());
     }
 }
