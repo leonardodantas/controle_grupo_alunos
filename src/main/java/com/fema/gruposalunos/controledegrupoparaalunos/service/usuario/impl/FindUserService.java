@@ -7,11 +7,15 @@ import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.response.Us
 import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.IUserRepository;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.usuario.IFindUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FindUserService implements IFindUserService {
@@ -42,7 +46,25 @@ public class FindUserService implements IFindUserService {
 
     @Override
     public UserResponseDTO findAdm() {
-        User user = userRepository.findByadmin(ADMIN).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ADMIN_NOT_EXIST));;
+        User user = userRepository.findByAdmin(ADMIN).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ADMIN_NOT_EXIST));
+        return UserResponseDTO.from(user);
+    }
+
+    @Override
+    public UserResponseDTO findUserByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, USER_NOT_EXIST));
+        return UserResponseDTO.from(user);
+    }
+
+    @Override
+    public List<UserResponseDTO> findAll(Pageable pageable) {
+        Page<User> users = userRepository.findAll(pageable);
+        return users.stream().map(UserResponseDTO::from).collect(Collectors.toUnmodifiableList());
+    }
+
+    @Override
+    public UserResponseDTO findById(String id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, USER_NOT_EXIST));;
         return UserResponseDTO.from(user);
     }
 }

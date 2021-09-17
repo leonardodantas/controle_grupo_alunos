@@ -5,6 +5,8 @@ import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.User;
 import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.IUserRepository;
 import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -40,7 +42,7 @@ public class UserRepositoryImpl implements IUserRepository {
     }
 
     @Override
-    public Optional<User> findByadmin(String admin) {
+    public Optional<User> findByAdmin(String admin) {
         return userRepository.findByAdmin(admin);
     }
 
@@ -51,5 +53,15 @@ public class UserRepositoryImpl implements IUserRepository {
         } catch (Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 }

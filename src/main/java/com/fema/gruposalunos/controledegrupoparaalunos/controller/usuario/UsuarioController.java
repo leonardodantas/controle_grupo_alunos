@@ -1,6 +1,7 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.controller.usuario;
 
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.dto.UsuarioDTO;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.response.UserResponseDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.usuario.IUsuarioService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +29,14 @@ public class UsuarioController {
 
     @GetMapping(name="Recuperar todos os usuarios")
     public ResponseEntity<?> recureparTodos(Pageable pageable){
-        Page<UsuarioDTO> usuarios = usuarioService.recuperarTodos(pageable);
+        Page<UserResponseDTO> usuarios = usuarioService.recuperarTodos(pageable);
         return ResponseEntity.ok(usuarios);
     }
 
     @GetMapping(value ="/{id}", name="Recuperar usuario pela ID")
     public ResponseEntity<?> recureparPeloId(@PathVariable String id){
-        UsuarioDTO usuarioDTO = usuarioService.recuperarPeloId(id);
-        return ResponseEntity.ok(usuarioDTO);
+        UserResponseDTO response = usuarioService.recuperarPeloId(id);
+        return ResponseEntity.ok(response);
     }
 
 }

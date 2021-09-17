@@ -1,6 +1,7 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.service.usergroup.impl;
 
 import com.fema.gruposalunos.controledegrupoparaalunos.model.groupuser.request.GroupUserRequestDTO;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Group;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.response.GroupResponseDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.User;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.response.UserResponseDTO;
@@ -39,6 +40,30 @@ public class SaveUserGroupService implements ISaveUserGroupService {
         GroupResponseDTO group = groupSelectService.findById(groupUserRequestDTO.getIdGroup());
         User user = User.of(userResponseDTO, group);
         userSaveService.updateUser(user);
+    }
+
+    @Override
+    public void saveUserInGroup(User user) {
+        verifyGroupHaveSpace(user.getGrupo());
+        UserResponseDTO userResponseDTO = getUserWhereNotAdmin(user);
+        GroupResponseDTO group = groupSelectService.findById(user.getIdGroup());
+        User userSave = User.of(userResponseDTO, group);
+        userSaveService.updateUser(userSave);
+    }
+
+    private UserResponseDTO getUserWhereNotAdmin(User user) {
+        UserResponseDTO userResponseDTO = userSelectService.findUserById(user.getId());
+        if(userResponseDTO.isAdmin()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, USER_IS_ADMIN);
+        }
+        return userResponseDTO;
+    }
+
+    private void verifyGroupHaveSpace(Group grupo) {
+        boolean groupHaveSpace = groupHaveSpaceService.groupHaveSpace(grupo.getId());
+        if(!groupHaveSpace) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, GROUP_NOT_HAVE_SPACE);
+        }
     }
 
     private UserResponseDTO getUserWhereNotAdmin(GroupUserRequestDTO groupUserRequestDTO) {

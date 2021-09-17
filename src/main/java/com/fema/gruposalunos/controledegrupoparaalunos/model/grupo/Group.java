@@ -1,5 +1,6 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.model.grupo;
 
+import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.dto.GrupoDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.request.GroupRequestDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.response.GroupResponseDTO;
 import lombok.*;
@@ -49,12 +50,23 @@ public class Group {
         this.isOpenGroup = false;
     }
 
+    private Group(GrupoDTO grupo) {
+        this.id = grupo.getId_grupo();
+        this.isOpenGroup = grupo.isOpenGrupo();
+        this.description = grupo.getDescricao();
+        this.numberParticipants = grupo.getQtde_participantes();
+    }
+
     public static Group from(GroupRequestDTO groupDTO) {
         return new Group(groupDTO);
     }
 
     public static Group from(GroupResponseDTO group) {
         return new Group(group);
+    }
+
+    public static Group from(GrupoDTO grupo) {
+        return new Group(grupo);
     }
 
     public Group finish() {

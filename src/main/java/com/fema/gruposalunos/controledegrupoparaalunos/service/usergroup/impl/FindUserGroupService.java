@@ -1,8 +1,10 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.service.usergroup.impl;
 
 import com.fema.gruposalunos.controledegrupoparaalunos.model.groupuser.response.UserGroupResponseDTO;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Group;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.response.GroupResponseDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.User;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.response.UserResponseDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IFindGroupService;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.usergroup.IFindUserGroupService;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.usuario.IFindUserService;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FindUserGroupService implements IFindUserGroupService {
@@ -35,6 +38,13 @@ public class FindUserGroupService implements IFindUserGroupService {
     public List<UserGroupResponseDTO> findAllGroupWithParticipants() {
         List<GroupResponseDTO> groups = groupFindService.findAll();
         return findUsersForGroups(groups);
+    }
+
+    @Override
+    public List<UserResponseDTO> findAllUsersOfGroup(String groupId) {
+        Group group = Group.builder().id(groupId).build();
+        List<User> users = userFindService.findUsersWith(group);
+        return users.stream().map(UserResponseDTO::from).collect(Collectors.toUnmodifiableList());
     }
 
     private List<UserGroupResponseDTO> findUsersForGroups(Page<GroupResponseDTO> groups) {

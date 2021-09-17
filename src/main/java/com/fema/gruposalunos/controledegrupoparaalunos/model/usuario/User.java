@@ -3,7 +3,10 @@ package com.fema.gruposalunos.controledegrupoparaalunos.model.usuario;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Group;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.response.GroupResponseDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.perfil.Perfil;
+import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.dto.UsuarioDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.response.UserResponseDTO;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.senha.GeradorDeSenha;
+import com.fema.gruposalunos.controledegrupoparaalunos.utils.PerfilsUtils;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Builder
@@ -51,8 +55,30 @@ public class User implements UserDetails {
         this.grupo = Group.from(group);
     }
 
+    public User(UsuarioDTO usuarioDTO) {
+        this.id = usuarioDTO.getId_usuario();
+        this.grupo = Group.from(usuarioDTO.getGrupo());
+        this.nome = usuarioDTO.getNome();
+        this.senha = GeradorDeSenha.getRandomPass();
+        this.email = usuarioDTO.getEmail();
+    }
+
+    private User(User user, List<Perfil> perfils) {
+        this.id = user.getId();
+        this.grupo = user.getGrupo();
+        this.email = user.getEmail();
+        this.senha = user.getSenha();
+        this.admin = PerfilsUtils.isAdmin(perfils);
+        this.nome = user.getNome();
+        this.perfis = perfils;
+    }
+
     public static User of(UserResponseDTO userResponseDTO, GroupResponseDTO group) {
         return new User(userResponseDTO, group);
+    }
+
+    public static User from(UsuarioDTO usuarioDTO) {
+        return new User(usuarioDTO);
     }
 
     @Override
@@ -91,6 +117,20 @@ public class User implements UserDetails {
     }
 
     public String getIdGrupo() {
+        return grupo.getId();
+    }
+
+    public User notAdmin() {
+        List<Perfil> perfils = Collections.singletonList((new Perfil(1L, "ROLE_ALUNO")));
+        return new User(this, perfils);
+    }
+
+    public User admin() {
+        List<Perfil> perfils = Collections.singletonList((new Perfil(2L, "ROLE_PROFESSOR")));
+        return new User(this, perfils);
+    }
+
+    public String getIdGroup() {
         return grupo.getId();
     }
 }
