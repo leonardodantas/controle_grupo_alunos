@@ -1,8 +1,8 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.controller.grupo.impl;
 
-import com.fema.gruposalunos.controledegrupoparaalunos.controller.grupo.IGroupUserSaveController;
+import com.fema.gruposalunos.controledegrupoparaalunos.controller.grupo.ISaveGroupUserController;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.groupuser.request.GroupUserRequestDTO;
-import com.fema.gruposalunos.controledegrupoparaalunos.service.usergroup.IUserGroupSaveService;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.usergroup.ISaveUserGroupService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Grupos")
 @RestController
 @RequestMapping("/group/user/insert")
-public class GroupUserSaveController implements IGroupUserSaveController {
+public class SaveGroupUserController implements ISaveGroupUserController {
 
     @Autowired
-    private IUserGroupSaveService userGroupSaveService;
+    private ISaveUserGroupService saveUserGroupService;
 
     @Override
-    public ResponseEntity<GroupUserRequestDTO> insertUserGroup(GroupUserRequestDTO request) {
-        userGroupSaveService.insertUserInGroup(request);
+    public ResponseEntity<GroupUserRequestDTO> insertUserInGroup(GroupUserRequestDTO request) {
+        saveUserGroupService.saveUserInGroup(request);
         return new ResponseEntity<>(request, HttpStatus.CREATED);
     }
 }

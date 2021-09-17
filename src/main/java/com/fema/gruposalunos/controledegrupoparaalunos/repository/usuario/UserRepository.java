@@ -1,5 +1,6 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario;
 
+import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Group;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,5 +23,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query(value = "SELECT * FROM USUARIOS WHERE ID_USUARIO = :id AND ADMIN = 'S'", nativeQuery = true)
     Optional<User> buscarAdmPeloId(@Param("id") String id_usuario);
 
-//    List<User> findAllByGroup(Group group);
+    List<User> findAllByGrupo(Group group);
+    List<User> findAllByGrupoId(String id);
 }

@@ -9,7 +9,8 @@ import com.fema.gruposalunos.controledegrupoparaalunos.repository.grupo.GroupRep
 import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.UserRepository;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.email.IEmailService;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.excecao.IExcecaoService;
-import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IGroupFindService;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IFindGroupService;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IHaveSpaceGroupService;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.senha.GeradorDeSenha;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,7 +44,10 @@ public class UsuarioService implements IUsuarioService {
     private IEmailService emailService;
 
     @Autowired
-    private IGroupFindService groupFindService;
+    private IFindGroupService groupFindService;
+
+    @Autowired
+    private IHaveSpaceGroupService groupHaveSpaceService;
 
     @Override
     @Transactional
@@ -57,14 +61,14 @@ public class UsuarioService implements IUsuarioService {
         usuarioDTO = definirStatusDoUsuario(usuarioDTO);
         User user = usuarioAssembler.dtoToEntity(usuarioDTO);
         user.setSenha(gerarSenhaParaUsuario());
-//        enviarEmailParaUsuarioComSenha(user);
+        enviarEmailParaUsuarioComSenha(user);
         return user;
     }
 
     @Transactional
     public User inserirUsuarioNoGrupo(User user) {
 
-        if(groupFindService.groupHaveSpace(user.getIdGrupo())){
+        if(groupHaveSpaceService.groupHaveSpace(user.getIdGrupo())){
             try {
                 usuarioRepository.save(user);
             } catch (Exception e){
@@ -94,8 +98,6 @@ public class UsuarioService implements IUsuarioService {
     @Override
     public List<User> recuperarTodosUsuariosPeloIdDoGrupo(String id_grupo) {
         return usuarioRepository.findAllById(id_grupo);
-//        usuarioRepository.findAll
-//        return Collections.emptyList();
     }
 
     @Override

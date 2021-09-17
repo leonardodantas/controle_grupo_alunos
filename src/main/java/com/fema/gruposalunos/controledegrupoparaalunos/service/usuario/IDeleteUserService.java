@@ -1,5 +1,5 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.service.usuario;
 
-public interface IUserDeleteService {
+public interface IDeleteUserService {
     void deleteAllUsers();
 }

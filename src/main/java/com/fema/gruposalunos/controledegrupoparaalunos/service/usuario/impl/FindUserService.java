@@ -5,7 +5,7 @@ import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.response.Grou
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.User;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.response.UserResponseDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.IUserRepository;
-import com.fema.gruposalunos.controledegrupoparaalunos.service.usuario.IUserFindService;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.usuario.IFindUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
-public class UserFindService implements IUserFindService {
+public class FindUserService implements IFindUserService {
 
     @Autowired
     private IUserRepository userRepository;

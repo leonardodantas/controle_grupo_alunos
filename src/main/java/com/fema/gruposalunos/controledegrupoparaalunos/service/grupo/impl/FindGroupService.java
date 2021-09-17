@@ -2,10 +2,8 @@ package com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.impl;
 
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.Group;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.response.GroupResponseDTO;
-import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.User;
 import com.fema.gruposalunos.controledegrupoparaalunos.repository.grupo.IGroupRepository;
-import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IGroupFindService;
-import com.fema.gruposalunos.controledegrupoparaalunos.service.usuario.IUserFindService;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IFindGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,40 +16,30 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class GroupFindtService implements IGroupFindService {
+public class FindGroupService implements IFindGroupService {
 
     @Autowired
     private IGroupRepository groupRepository;
 
-    @Autowired
-    private IUserFindService userFindService;
-
     private static final String GROUP_NOT_EXIST = "Grupo não existe";
 
     @Override
-    public Page<GroupResponseDTO> findAllGroup(Pageable pageable) {
+    public Page<GroupResponseDTO> findAll(Pageable pageable) {
         Page<Group> groupPage = groupRepository.findAllGroup(pageable);
         List<GroupResponseDTO> groupsResponseDTO = groupPage.stream().map(GroupResponseDTO::from).collect(Collectors.toUnmodifiableList());
         return new PageImpl<>(groupsResponseDTO, groupPage.getPageable(), groupPage.getTotalElements());
     }
 
     @Override
-    public boolean groupHaveSpace(String idGroup) {
-        Group group = verifyGroupExist(idGroup);
-        List<User> users = userFindService.findUsersWith(group);
-        return users.size() + 1 <= group.getNumberParticipants();
+    public List<GroupResponseDTO> findAll() {
+        Page<Group> groupPage = groupRepository.findAllGroup();
+        return groupPage.stream().map(GroupResponseDTO::from).collect(Collectors.toUnmodifiableList());
     }
 
     @Override
     public GroupResponseDTO findById(String id) {
         Group group = verifyGroupExist(id);
         return GroupResponseDTO.from(group);
-    }
-
-    @Override
-    public List<GroupResponseDTO> findAllGroup() {
-        Page<Group> groupPage = groupRepository.findAllGroup();
-        return groupPage.stream().map(GroupResponseDTO::from).collect(Collectors.toUnmodifiableList());
     }
 
     private Group verifyGroupExist(String id){

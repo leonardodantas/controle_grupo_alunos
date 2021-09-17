@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.net.HttpURLConnection;
 
-public interface IGroupFindController {
+public interface IFindGroupController {
 
     @GetMapping(value = "/all", name = "Retorna todos os grupos paginados")
     @ApiOperation(value = "Recupera todos os Grupos")

@@ -3,9 +3,9 @@ package com.fema.gruposalunos.controledegrupoparaalunos.service.usergroup.impl;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.groupuser.response.UserGroupResponseDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.response.GroupResponseDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.User;
-import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IGroupFindService;
-import com.fema.gruposalunos.controledegrupoparaalunos.service.usergroup.IUserGroupFindService;
-import com.fema.gruposalunos.controledegrupoparaalunos.service.usuario.IUserFindService;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IFindGroupService;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.usergroup.IFindUserGroupService;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.usuario.IFindUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,24 +16,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UserGroupFindService implements IUserGroupFindService {
+public class FindUserGroupService implements IFindUserGroupService {
 
     @Autowired
-    private IGroupFindService groupFindService;
+    private IFindGroupService groupFindService;
 
     @Autowired
-    private IUserFindService userFindService;
+    private IFindUserService userFindService;
 
     @Override
     public Page<UserGroupResponseDTO> findAllGroupWithParticipants(Pageable pageable) {
-        Page<GroupResponseDTO> groups = groupFindService.findAllGroup(pageable);
+        Page<GroupResponseDTO> groups = groupFindService.findAll(pageable);
         List<UserGroupResponseDTO> userGroupResponseDTO = findUsersForGroups(groups);
         return new PageImpl<>(userGroupResponseDTO, groups.getPageable(), groups.getTotalElements());
     }
 
     @Override
     public List<UserGroupResponseDTO> findAllGroupWithParticipants() {
-        List<GroupResponseDTO> groups = groupFindService.findAllGroup();
+        List<GroupResponseDTO> groups = groupFindService.findAll();
         return findUsersForGroups(groups);
     }
 
@@ -44,11 +44,10 @@ public class UserGroupFindService implements IUserGroupFindService {
     }
 
     private void populateList(List<GroupResponseDTO> groups, List<UserGroupResponseDTO> userGroupResponseDTO) {
-        groups
-                .forEach(group -> {
-                    List<User> users = userFindService.findUsersWith(group);
-                    userGroupResponseDTO.add(UserGroupResponseDTO.of(group, users));
-                });
+        groups.forEach(group -> {
+            List<User> users = userFindService.findUsersWith(group);
+            userGroupResponseDTO.add(UserGroupResponseDTO.of(group, users));
+        });
     }
 
     private List<UserGroupResponseDTO> findUsersForGroups(List<GroupResponseDTO> groups) {

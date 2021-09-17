@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import java.net.HttpURLConnection;
 
-public interface IGroupUpdateController {
+public interface IFinallyGroupController {
 
     @PutMapping(value = "/finally/{id}", name = "Fechar grupo pelo ID")
     @ApiOperation(value = "Fechar grupo pelo ID")

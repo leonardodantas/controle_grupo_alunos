@@ -1,6 +1,6 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.service.system;
 
-public interface ISystemFinishService {
+public interface IFinishSystemService {
 
     void finishSystem();
 

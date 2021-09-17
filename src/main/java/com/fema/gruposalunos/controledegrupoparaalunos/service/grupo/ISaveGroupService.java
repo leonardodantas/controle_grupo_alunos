@@ -3,7 +3,7 @@ package com.fema.gruposalunos.controledegrupoparaalunos.service.grupo;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.request.GroupRequestDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.grupo.response.GroupResponseDTO;
 
-public interface IGroupSaveService {
+public interface ISaveGroupService {
 
-    GroupResponseDTO saveGroup(GroupRequestDTO groupDTO);
+    GroupResponseDTO save(GroupRequestDTO groupDTO);
 }

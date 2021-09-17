@@ -7,7 +7,7 @@ import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.response.Us
 
 import java.util.List;
 
-public interface IUserFindService {
+public interface IFindUserService {
 
     List<User> findUsersWith(Group group);
     UserResponseDTO findUserById(String id);

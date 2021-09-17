@@ -1,6 +1,6 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.service.grupo;
 
-public interface IGroupDeleteService {
+public interface IDeleteGroupService {
 
-    void deleteAllGroup();
+    void deleteAll();
 }

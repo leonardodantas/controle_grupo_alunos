@@ -1,7 +1,7 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.controller.grupo.impl;
 
-import com.fema.gruposalunos.controledegrupoparaalunos.controller.grupo.IGroupUpdateController;
-import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IGroupUpdateService;
+import com.fema.gruposalunos.controledegrupoparaalunos.controller.grupo.IFinallyGroupController;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IFinishGroupService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Grupos")
 @RestController
 @RequestMapping("/group")
-public class GroupUpdateController implements IGroupUpdateController {
+public class FinallyGroupController implements IFinallyGroupController {
 
     @Autowired
-    private IGroupUpdateService groupUpdateService;
+    private IFinishGroupService finishGroupService;
 
     @Override
     public ResponseEntity<?> finallyGroup(String id) {
-        groupUpdateService.finishGroup(id);
+        finishGroupService.finishById(id);
         return ResponseEntity.ok().build();
     }
 }
