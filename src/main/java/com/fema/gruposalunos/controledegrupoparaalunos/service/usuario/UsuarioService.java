@@ -1,13 +1,13 @@
 package com.fema.gruposalunos.controledegrupoparaalunos.service.usuario;
 
-import com.fema.gruposalunos.controledegrupoparaalunos.model.email.EmailDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.perfil.Perfil;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.Usuario;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.assembler.UsuarioAssembler;
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.dto.UsuarioDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.repository.grupo.IGrupoRepository;
 import com.fema.gruposalunos.controledegrupoparaalunos.repository.usuario.IUsuarioRepository;
-import com.fema.gruposalunos.controledegrupoparaalunos.service.email.IEmailService;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.email.*;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.email.impl.MessageEmailUser;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.excecao.IExcecaoService;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.grupo.IGrupoService;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.senha.GeradorDeSenha;
@@ -43,7 +43,7 @@ public class UsuarioService implements IUsuarioService {
     private IExcecaoService excecaoService;
 
     @Autowired
-    private IEmailService emailService;
+    private ISendEmailService sendEmailService;
 
     @Override
     @Transactional
@@ -144,12 +144,8 @@ public class UsuarioService implements IUsuarioService {
     }
 
     private void enviarEmailParaUsuarioComSenha(Usuario usuario){
-        EmailDTO emailDTO = EmailDTO.builder()
-                .emailDestinatario(usuario.getEmail())
-                .nomeDestino(usuario.getNome())
-                .senha(usuario.getSenha())
-                .build();
-        emailService.enviarEmailComSenha(emailDTO);
+        IMessageEmail message = new MessageEmailUser.Builder(usuario).body(usuario).build();
+        sendEmailService.sendEmail(message);
     }
 
     private UsuarioDTO definirStatusDoUsuario(UsuarioDTO usuarioDTO){

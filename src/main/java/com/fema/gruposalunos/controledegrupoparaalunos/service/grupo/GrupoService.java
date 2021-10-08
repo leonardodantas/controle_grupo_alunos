@@ -9,6 +9,9 @@ import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.assembler.U
 import com.fema.gruposalunos.controledegrupoparaalunos.model.usuario.dto.UsuarioDTO;
 import com.fema.gruposalunos.controledegrupoparaalunos.repository.grupo.IGrupoRepository;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.email.IEmailService;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.email.IMessageEmail;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.email.ISendEmailService;
+import com.fema.gruposalunos.controledegrupoparaalunos.service.email.impl.MessageEmailFinishSystem;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.excecao.IExcecaoService;
 import com.fema.gruposalunos.controledegrupoparaalunos.service.usuario.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +24,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -44,6 +46,9 @@ public class GrupoService implements IGrupoService {
 
     @Autowired
     private IEmailService emailService;
+
+    @Autowired
+    private ISendEmailService sendEmailService;
 
     @Override
     public GrupoDTO cadastrarNovoGrupo(GrupoDTO grupoDTO) {
@@ -168,8 +173,9 @@ public class GrupoService implements IGrupoService {
         finalizarTodosOsGrupos();
         usuarioService.deletarTodosOsUsuarios();
         deletarTodosOsGrupos();
-        emailService.enviarGruposParaEmailDoAdministrador(grupoDTOS,usuarioDTO);
 
+        IMessageEmail message = new MessageEmailFinishSystem.Builder(usuarioDTO).body(grupoDTOS).build();
+        sendEmailService.sendEmail(message);
     }
 
     private List<GrupoDTO> organizaUsuariosNosGrupos(Page<Grupo> grupos) {

@@ -59,15 +59,9 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT,"/grupo/fechar/*").hasRole("PROFESSOR")
                 .antMatchers(HttpMethod.POST,"/grupo/finalizar/sistema").hasRole("PROFESSOR")
                 .anyRequest().denyAll()
-<<<<<<< HEAD
-                .and().cors()
-                .and().csrf().disable()
-                .addFilterBefore(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
-=======
                 .and().cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().addFilterBefore(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
->>>>>>> 68c565c29e4f568562b29ad2138ace79eaac5721
     }
 
 
